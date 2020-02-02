@@ -1,4 +1,4 @@
-# FastMapper
+# FastMapperEmit
 根据需要进行实体间转换
 
 将实体进行转换，采用EMIT;
