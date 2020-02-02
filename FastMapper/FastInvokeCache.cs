@@ -56,7 +56,14 @@ namespace FastMapper
             dicOhers = new ConcurrentDictionary<string, FastInvoke>();
         }
 
-        public void Add(string name,MapType mapType, FastInvoke fastInvok)
+
+        /// <summary>
+        /// 添加委托
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="mapType"></param>
+        /// <param name="fastInvok"></param>
+        internal void Add(string name,MapType mapType, FastInvoke fastInvok)
         {
            
               switch (mapType)
@@ -90,8 +97,14 @@ namespace FastMapper
 
         
         }
-        
-        public FastInvoke GetFastInvok(string name,MapType mapType)
+
+        /// <summary>
+        /// 获取委托
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="mapType"></param>
+        /// <returns></returns>
+        internal FastInvoke GetFastInvok(string name,MapType mapType)
         {
             FastInvoke fastInvoke = null;
             switch (mapType)

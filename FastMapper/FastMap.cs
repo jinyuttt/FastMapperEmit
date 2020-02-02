@@ -25,9 +25,137 @@ using System.Reflection.Emit;
 namespace FastMapper
 {
     public delegate object FastInvoke(object obj);
+
+
+    /// <summary>
+    /// 转换类
+    /// </summary>
     public class FastMap
     {
+
+        /// <summary>
+        /// 保存转换补充的委托
+        /// </summary>
         private static readonly ConcurrentDictionary<string, object> dicActions = new ConcurrentDictionary<string, object>();
+
+        /// <summary>
+        /// 生成对应转换
+        /// </summary>
+        /// <typeparam name="TSource">源</typeparam>
+        /// <typeparam name="TDest">目标</typeparam>
+        /// <param name="mapType">转换方式</param>
+        /// <param name="func">独立委托</param>
+        /// <param name="key">单独命名独立委托缓存</param>
+        public static  void Bind<TSource,TDest>(MapType mapType = MapType.PTP, Action<TSource, TDest> func = null, string key = null)
+        {
+            string name = typeof(TSource).FullName + "To" + typeof(TDest).FullName + "_" + mapType;
+            if (string.IsNullOrEmpty(key))
+            {
+                key = name;
+            }
+            FastInvoke fastInvok = FastInvokeCache.Instance.GetFastInvok(name, mapType);
+            if (fastInvok != null)
+            {
+              
+                return ;
+            }
+            else
+            {
+                switch (mapType)
+                {
+                    case MapType.PTP:
+                        fastInvok = GetFastInvokPTP(typeof(TDest), typeof(TSource));
+                        break;
+                    case MapType.PTPI:
+                        fastInvok = GetFastInvokPTPI(typeof(TDest), typeof(TSource));
+                        break;
+                    case MapType.FTF:
+                        fastInvok = GetFastInvokFTF(typeof(TDest), typeof(TSource));
+                        break;
+                    case MapType.FTFI:
+                        fastInvok = GetFastInvokFTFI(typeof(TDest), typeof(TSource));
+                        break;
+                    case MapType.PTF_TP:
+                        fastInvok = GetFastInvokPTF_TP(typeof(TDest), typeof(TSource));
+                        break;
+                    case MapType.FPTFP:
+                        fastInvok = GetFastInvokFPTFP(typeof(TDest), typeof(TSource));
+                        break;
+                    case MapType.FPTFPI:
+                        fastInvok = GetFastInvokFPTFP(typeof(TDest), typeof(TSource));
+                        break;
+                    default:
+                        fastInvok = GetFastInvokPTP(typeof(TDest), typeof(TSource));
+                        break;
+
+                }
+            }
+
+         
+            //执行成功的缓存
+            FastInvokeCache.Instance.Add(name, mapType, fastInvok);
+            if (func != null)
+            {
+               
+                ActionInvoke<TSource, TDest> action = new ActionInvoke<TSource, TDest>
+                {
+                    Action = func
+                };
+
+                dicActions[key] = action;
+            }
+        
+        }
+
+        /// <summary>
+        /// 生成对应转换
+        /// </summary>
+        /// <param name="TSource"></param>
+        /// <param name="TDest"></param>
+        /// <param name="mapType"></param>
+        public static void Bind(Type TSource,Type TDest, MapType mapType = MapType.PTP)
+        {
+            string name = TSource.FullName + "To" + TDest.FullName + "_" + mapType;
+           
+            FastInvoke fastInvok = FastInvokeCache.Instance.GetFastInvok(name, mapType);
+            if (fastInvok != null)
+            {
+
+                return;
+            }
+            else
+            {
+                switch (mapType)
+                {
+                    case MapType.PTP:
+                        fastInvok = GetFastInvokPTP(TDest, TSource);
+                        break;
+                    case MapType.PTPI:
+                        fastInvok = GetFastInvokPTPI(TDest, TSource);
+                        break;
+                    case MapType.FTF:
+                        fastInvok = GetFastInvokFTF(TDest, TSource);
+                        break;
+                    case MapType.FTFI:
+                        fastInvok = GetFastInvokFTFI(TDest, TSource);
+                        break;
+                    case MapType.PTF_TP:
+                        fastInvok = GetFastInvokPTF_TP(TDest, TSource);
+                        break;
+                    case MapType.FPTFP:
+                        fastInvok = GetFastInvokFPTFP(TDest, TSource);
+                        break;
+                    case MapType.FPTFPI:
+                        fastInvok = GetFastInvokFPTFP(TDest, TSource);
+                        break;
+                    default:
+                        fastInvok = GetFastInvokPTP(TDest, TSource);
+                        break;
+
+                }
+            }
+        }
+
 
         /// <summary>
         /// 类型转换
@@ -70,28 +198,28 @@ namespace FastMapper
                 switch (mapType)
                 {
                     case MapType.PTP:
-                        fastInvok = GetFastInvokPTP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTP(typeof(TDest),obj.GetType());
                         break;
                     case MapType.PTPI:
-                        fastInvok = GetFastInvokPTPI(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTPI(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FTF:
-                        fastInvok = GetFastInvokFTF(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFTF(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FTFI:
-                        fastInvok = GetFastInvokFTFI(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFTFI(typeof(TDest), obj.GetType());
                         break;
                     case MapType.PTF_TP:
-                        fastInvok = GetFastInvokPTF_TP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTF_TP(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FPTFP:
-                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FPTFPI:
-                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj.GetType());
                         break;
                     default:
-                        fastInvok = GetFastInvokPTP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTP(typeof(TDest), obj.GetType());
                         break;
 
                 }
@@ -154,28 +282,28 @@ namespace FastMapper
                 switch (mapType)
                 {
                     case MapType.PTP:
-                        fastInvok = GetFastInvokPTP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTP(typeof(TDest), obj.GetType());
                         break;
                     case MapType.PTPI:
-                        fastInvok = GetFastInvokPTPI(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTPI(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FTF:
-                        fastInvok = GetFastInvokFTF(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFTF(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FTFI:
-                        fastInvok = GetFastInvokFTFI(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFTFI(typeof(TDest), obj.GetType());
                         break;
                     case MapType.PTF_TP:
-                        fastInvok = GetFastInvokPTF_TP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTF_TP(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FPTFP:
-                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj.GetType());
                         break;
                     case MapType.FPTFPI:
-                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokFPTFP(typeof(TDest), obj.GetType());
                         break;
                     default:
-                        fastInvok = GetFastInvokPTP(typeof(TDest), obj);
+                        fastInvok = GetFastInvokPTP(typeof(TDest), obj.GetType());
                         break;
 
                 }
@@ -197,35 +325,65 @@ namespace FastMapper
             return result;
         }
 
+       
+        /// <summary>
+        /// 获取转换方法
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private static string GetMethod(Type type)
         {
+
+            
             switch (type.Name)
             {
                 case "Int32":
                     return "ToInt32";
-
+                case "Boolean ":
+                    return "ToBoolean";
+                case "DateTime":
+                    return "ToDateTime";
+                case "Decimal":
+                    return "ToDecimal";
+                case "Double":
+                    return "ToDouble";
+                case "Int16":
+                    return "ToInt16";
+                case "Int64":
+                    return "ToInt64";
+                case "Single":
+                    return "ToSingle";
+                case "String":
+                    return "ToString";
+                case "UInt16":
+                    return "ToUInt16";
+                case "UInt32":
+                    return "ToUInt32";
+                case "UInt64":
+                    return "ToUInt64";
                 default:
 
                     return "ToInt32";
 
             }
         }
-        private static FastInvoke GetFastInvokPTP<T>(Type type, T obj)
+       
+        private static FastInvoke GetFastInvokPTP(Type dest, Type sourceType)
         {
-            string name = typeof(T).FullName + "To" + type.FullName + "_" + MapType.PTP;
-            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, type.Module);
+            string name = sourceType.FullName + "To" + dest.FullName + "_" + MapType.PTP;
+            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, dest.Module);
             var il = dynamicMethod.GetILGenerator();
-            var src = il.DeclareLocal(obj.GetType());
-            var tar = il.DeclareLocal(type);
+            var src = il.DeclareLocal(sourceType);
+            var tar = il.DeclareLocal(dest);
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Isinst, obj.GetType());
+            il.Emit(OpCodes.Isinst, sourceType);
             il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Newobj, type.GetConstructor(new Type[0]));
+            il.Emit(OpCodes.Newobj, dest.GetConstructor(new Type[0]));
             il.Emit(OpCodes.Stloc_1);
-            var source = obj.GetType().GetProperties();
+            var source = sourceType.GetProperties();
             foreach (var pty in source)
             {
-                var p = type.GetProperty(pty.Name);
+                var p = dest.GetProperty(pty.Name);
                 if (p != null)
                 {
                     if (p.PropertyType.Equals(pty.PropertyType) || !p.PropertyType.IsValueType)
@@ -244,7 +402,7 @@ namespace FastMapper
                         if (p.PropertyType.IsValueType)
                         {
                             var mth = GetMethod(p.PropertyType);
-                            // Convert.ToInt32();
+                          
                             var m = typeof(Convert).GetMethod(mth, new Type[] { pty.PropertyType });
                             if (m == null && pty.PropertyType.IsClass)
                             {
@@ -264,22 +422,22 @@ namespace FastMapper
 
         }
 
-        private static FastInvoke GetFastInvokPTPI<T>(Type type, T obj)
+        private static FastInvoke GetFastInvokPTPI(Type dest, Type sourceType)
         {
-            string name = typeof(T).FullName + "To" + type.FullName + "_" + MapType.PTPI;
-            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, type.Module);
+            string name = sourceType.FullName + "To" + dest.FullName + "_" + MapType.PTPI;
+            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, dest.Module);
             var il = dynamicMethod.GetILGenerator();
-            var src = il.DeclareLocal(obj.GetType());
-            var tar = il.DeclareLocal(type);
+            var src = il.DeclareLocal(sourceType);
+            var tar = il.DeclareLocal(dest);
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Isinst, obj.GetType());
+            il.Emit(OpCodes.Isinst, sourceType);
             il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Newobj, type.GetConstructor(new Type[0]));
+            il.Emit(OpCodes.Newobj, dest.GetConstructor(new Type[0]));
             il.Emit(OpCodes.Stloc_1);
-            var source = obj.GetType().GetProperties();
+            var source = sourceType.GetProperties();
             foreach (var pty in source)
             {
-                var p = type.GetProperty(pty.Name, BindingFlags.IgnoreCase | BindingFlags.Public);
+                var p = dest.GetProperty(pty.Name, BindingFlags.IgnoreCase | BindingFlags.Public);
                 if (p != null)
                 {
                     if (p.PropertyType.Equals(pty.PropertyType) || !p.PropertyType.IsValueType)
@@ -318,19 +476,19 @@ namespace FastMapper
 
         }
 
-        private static FastInvoke GetFastInvokFTF<T>(Type type, T obj)
+        private static FastInvoke GetFastInvokFTF(Type dest, Type sourceType)
         {
-            string name = typeof(T).FullName + "To" + type.FullName + "_" + MapType.FTF;
-            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, type.Module);
+            string name = sourceType.FullName + "To" + dest.FullName + "_" + MapType.FTF;
+            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, dest.Module);
             var il = dynamicMethod.GetILGenerator();
-            var src = il.DeclareLocal(obj.GetType());
-            var tar = il.DeclareLocal(type);
+            var src = il.DeclareLocal(sourceType);
+            var tar = il.DeclareLocal(dest);
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Isinst, obj.GetType());
+            il.Emit(OpCodes.Isinst, sourceType);
             il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Newobj, type.GetConstructor(new Type[0]));
+            il.Emit(OpCodes.Newobj, dest.GetConstructor(new Type[0]));
             il.Emit(OpCodes.Stloc_1);
-            var source = obj.GetType().GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var source = sourceType.GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in source)
             {
 
@@ -338,7 +496,7 @@ namespace FastMapper
                 {
                     continue;
                 }
-                var p = type.GetField(field.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var p = dest.GetField(field.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 
                 if (p != null)
@@ -379,19 +537,19 @@ namespace FastMapper
 
         }
 
-        private static FastInvoke GetFastInvokFTFI<T>(Type type, T obj)
+        private static FastInvoke GetFastInvokFTFI(Type dest, Type sourceType)
         {
-            string name = typeof(T).FullName + "To" + type.FullName + "_" + MapType.FTFI;
-            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, type.Module);
+            string name = sourceType.FullName + "To" + dest.FullName + "_" + MapType.FTFI;
+            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, dest.Module);
             var il = dynamicMethod.GetILGenerator();
-            var src = il.DeclareLocal(obj.GetType());
-            var tar = il.DeclareLocal(type);
+            var src = il.DeclareLocal(sourceType);
+            var tar = il.DeclareLocal(dest);
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Isinst, obj.GetType());
+            il.Emit(OpCodes.Isinst, sourceType);
             il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Newobj, type.GetConstructor(new Type[0]));
+            il.Emit(OpCodes.Newobj, dest.GetConstructor(new Type[0]));
             il.Emit(OpCodes.Stloc_1);
-            var source = obj.GetType().GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var source = sourceType.GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in source)
             {
 
@@ -399,7 +557,7 @@ namespace FastMapper
                 {
                     continue;
                 }
-                var p = type.GetField(field.Name, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var p = dest.GetField(field.Name, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 
                 if (p != null)
@@ -440,23 +598,23 @@ namespace FastMapper
 
         }
 
-        private static FastInvoke GetFastInvokPTF_TP<T>(Type type, T obj)
+        private static FastInvoke GetFastInvokPTF_TP(Type dest,Type sourceType)
         {
-            string name = typeof(T).FullName + "To" + type.FullName + "_" + MapType.PTF_TP;
-            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, type.Module);
+            string name = sourceType.FullName + "To" + dest.FullName + "_" + MapType.PTF_TP;
+            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, dest.Module);
             var il = dynamicMethod.GetILGenerator();
-            var src = il.DeclareLocal(obj.GetType());
-            var tar = il.DeclareLocal(type);
+            var src = il.DeclareLocal(sourceType);
+            var tar = il.DeclareLocal(dest);
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Isinst, obj.GetType());
+            il.Emit(OpCodes.Isinst, sourceType);
             il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Newobj, type.GetConstructor(new Type[0]));
+            il.Emit(OpCodes.Newobj, dest.GetConstructor(new Type[0]));
             il.Emit(OpCodes.Stloc_1);
-            var source = obj.GetType().GetProperties();
+            var source = sourceType.GetProperties();
             foreach (var pty in source)
             {
 
-                var p = type.GetField(pty.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var p = dest.GetField(pty.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                 if (p != null)
                 {
@@ -489,7 +647,7 @@ namespace FastMapper
                     }
                 }
                 //
-                var pro = type.GetProperty(pty.Name, BindingFlags.IgnoreCase | BindingFlags.Public);
+                var pro = dest.GetProperty(pty.Name, BindingFlags.IgnoreCase | BindingFlags.Public);
                 if (pro != null)
                 {
                     if (pro.PropertyType.Equals(pty.PropertyType) || !pro.PropertyType.IsValueType)
@@ -530,22 +688,22 @@ namespace FastMapper
 
         }
 
-        private static FastInvoke GetFastInvokFPTFP<T>(Type type, T obj)
+        private static FastInvoke GetFastInvokFPTFP(Type dest,Type sourceType)
         {
-            string name = typeof(T).FullName + "To" + type.FullName + "_" + MapType.FPTFP;
-            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, type.Module);
+            string name = sourceType.FullName + "To" + dest.FullName + "_" + MapType.FPTFP;
+            DynamicMethod dynamicMethod = new DynamicMethod(name, typeof(object), new Type[] { typeof(object) }, dest.Module);
             var il = dynamicMethod.GetILGenerator();
-            var src = il.DeclareLocal(obj.GetType());
-            var tar = il.DeclareLocal(type);
+            var src = il.DeclareLocal(sourceType);
+            var tar = il.DeclareLocal(dest);
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Isinst, obj.GetType());
+            il.Emit(OpCodes.Isinst, sourceType);
             il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Newobj, type.GetConstructor(new Type[0]));
+            il.Emit(OpCodes.Newobj, dest.GetConstructor(new Type[0]));
             il.Emit(OpCodes.Stloc_1);
-            var source = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            FieldEmit(il, type, source);
-            var properties = obj.GetType().GetProperties();
-            PropertyEmit(il, type, properties);
+            var source = sourceType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            FieldEmit(il, dest, source);
+            var properties = sourceType.GetProperties();
+            PropertyEmit(il, dest, properties);
 
             il.Emit(OpCodes.Ldloc_1);
             il.Emit(OpCodes.Ret);
