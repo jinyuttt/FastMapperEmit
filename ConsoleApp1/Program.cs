@@ -18,6 +18,7 @@ namespace ConsoleApp1
                 V.Name = k.UserName;
             }));
 
+            var r = FastMap.Mapper<Users>(new UserInfo() { UserName = "ww", Age = 12, Id = "23", psw = 345 }, MapType.FTF);
         }
     }
 }

@@ -1,0 +1,8 @@
+E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapperEmit.deps.json
+E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapperEmit.dll
+E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapperEmit.pdb
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapperEmit.csprojAssemblyReference.cache
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapperEmit.AssemblyInfoInputs.cache
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapperEmit.AssemblyInfo.cs
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapperEmit.dll
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapperEmit.pdb

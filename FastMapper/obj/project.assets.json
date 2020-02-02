@@ -323,9 +323,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Study\\FastMapper\\FastMapper\\FastMapper.csproj",
-      "projectName": "FastMapper",
-      "projectPath": "E:\\Study\\FastMapper\\FastMapper\\FastMapper.csproj",
+      "projectUniqueName": "E:\\Study\\FastMapper\\FastMapper\\FastMapperEmit.csproj",
+      "projectName": "FastMapperEmit",
+      "projectPath": "E:\\Study\\FastMapper\\FastMapper\\FastMapperEmit.csproj",
       "packagesPath": "C:\\Users\\jinyu\\.nuget\\packages\\",
       "outputPath": "E:\\Study\\FastMapper\\FastMapper\\obj\\",
       "projectStyle": "PackageReference",

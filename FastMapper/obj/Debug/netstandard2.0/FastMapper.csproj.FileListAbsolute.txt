@@ -5,3 +5,4 @@ E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapper.dll
 E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapper.pdb
 E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapper.dll
 E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapper.pdb
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapper.csprojAssemblyReference.cache
