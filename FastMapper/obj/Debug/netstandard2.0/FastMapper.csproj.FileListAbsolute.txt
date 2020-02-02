@@ -1,0 +1,7 @@
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapper.AssemblyInfoInputs.cache
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapper.AssemblyInfo.cs
+E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapper.deps.json
+E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapper.dll
+E:\Study\FastMapper\FastMapper\bin\Debug\netstandard2.0\FastMapper.pdb
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapper.dll
+E:\Study\FastMapper\FastMapper\obj\Debug\netstandard2.0\FastMapper.pdb

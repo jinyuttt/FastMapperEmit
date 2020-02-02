@@ -1,0 +1,5 @@
+E:\Study\FastMapper\TestLib\bin\Debug\TestLib.dll
+E:\Study\FastMapper\TestLib\bin\Debug\TestLib.pdb
+E:\Study\FastMapper\TestLib\obj\Debug\TestLib.dll
+E:\Study\FastMapper\TestLib\obj\Debug\TestLib.pdb
+E:\Study\FastMapper\TestLib\obj\Debug\TestLib.csprojAssemblyReference.cache
